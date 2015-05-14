@@ -12,14 +12,11 @@ import fr.ac_versailles.crdp.apiscol.previews.Conversion;
 
 public class EpubConversionWorker extends PDFConversionWorker {
 
-	private String realPath;
-
 	public EpubConversionWorker(File incomingFile, File outputDir,
 			List<String> outputMimeTypeList, int pageLimit,
-			Conversion conversion, String realPath) {
+			Conversion conversion) {
 		super(incomingFile, outputDir, outputMimeTypeList, pageLimit,
 				conversion);
-		this.realPath = realPath;
 	}
 
 	@Override
@@ -37,7 +34,7 @@ public class EpubConversionWorker extends PDFConversionWorker {
 		String inputDir = this.incomingFile.getParentFile().getParentFile()
 				.getAbsolutePath();
 
-		String newName = inputDir 
+		String newName = inputDir
 				+ "/"
 				+ incomingFile.getName().substring(0,
 						incomingFile.getName().lastIndexOf('.')) + ".pdf";
@@ -62,32 +59,32 @@ public class EpubConversionWorker extends PDFConversionWorker {
 
 	private boolean convertToPdf() {
 
-		try {
-			String[] commande = { realPath + "/WEB-INF/epub2pdf/epub2pdf.sh",
-					incomingFile.getAbsolutePath() };
-			System.out.println(StringUtils.join(commande, " "));
-			String[] envp = { "HOME=/tmp" };
-			Process p = Runtime.getRuntime().exec(commande, envp,
-					new File(realPath + "/WEB-INF/epub2pdf"));
-			BufferedReader output = getOutput(p);
-			BufferedReader error = getError(p);
-			String ligne = "";
-			while ((ligne = output.readLine()) != null) {
-				System.out.println("err. " + ligne);
-			}
-
-			while ((ligne = error.readLine()) != null) {
-				System.out.println(ligne);
-			}
-
-			p.waitFor();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			return false;
-		}
+		// try {
+		// String[] commande = { realPath + "/WEB-INF/epub2pdf/epub2pdf.sh",
+		// incomingFile.getAbsolutePath() };
+		// System.out.println(StringUtils.join(commande, " "));
+		// String[] envp = { "HOME=/tmp" };
+		// Process p = Runtime.getRuntime().exec(commande, envp,
+		// new File(realPath + "/WEB-INF/epub2pdf"));
+		// BufferedReader output = getOutput(p);
+		// BufferedReader error = getError(p);
+		// String ligne = "";
+		// while ((ligne = output.readLine()) != null) {
+		// System.out.println("err. " + ligne);
+		// }
+		//
+		// while ((ligne = error.readLine()) != null) {
+		// System.out.println(ligne);
+		// }
+		//
+		// p.waitFor();
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// return false;
+		// } catch (InterruptedException e) {
+		// e.printStackTrace();
+		// return false;
+		// }
 		return true;
 
 	}

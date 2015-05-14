@@ -42,7 +42,7 @@ public class PDFConversionWorker extends AbstractConversionWorker {
 		try {
 			String device = getGsDevice(askedMimeType);
 			String extension = getOutputFileExtension(askedMimeType);
-			String[] commande = { "gs", "-dNOPAUSE", "-dBATCH",
+			String[] commande = { "gswin64", "-dNOPAUSE", "-dBATCH",
 					"-sDEVICE=" + device, "-r96",
 					"-sOutputFile=page%00d." + extension,
 					"-dLastPage=" + pageLimit, incomingFile.getAbsolutePath() };

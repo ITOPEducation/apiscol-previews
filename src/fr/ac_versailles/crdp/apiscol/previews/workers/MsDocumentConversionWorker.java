@@ -46,8 +46,9 @@ public class MsDocumentConversionWorker extends PDFConversionWorker {
 	}
 
 	private boolean convertToPdf() {
+
 		try {
-			String[] commande = { "libreoffice", "--headless", "--convert-to",
+			String[] commande = { "soffice", "--headless", "--convert-to",
 					"pdf", "--nofirststartwizard", "--outdir", ".",
 					"./" + incomingFile.getName() };
 			System.out.println(StringUtils.join(commande, " "));

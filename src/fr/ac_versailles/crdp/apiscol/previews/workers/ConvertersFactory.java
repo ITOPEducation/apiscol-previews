@@ -38,8 +38,7 @@ public class ConvertersFactory {
 
 	public static IConversionWorker getConversionWorker(String mimeType,
 			List<String> outputMimeTypeList, File incomingFile, File OutputDir,
-			int limit, Conversion conversion, String realPath) {
-		System.out.println(realPath);
+			int limit, Conversion conversion) {
 		System.out.println(mimeType);
 		System.out.println(outputMimeTypeList.get(0));
 		if (MimeTypeGroups.PDF.list().contains(mimeType))
@@ -53,7 +52,7 @@ public class ConvertersFactory {
 		if (MimeTypeGroups.EPUB.list().contains(mimeType))
 			if (MimeTypeGroups.IMAGES.list().containsAll(outputMimeTypeList))
 				return new EpubConversionWorker(incomingFile, OutputDir,
-						outputMimeTypeList, limit, conversion, realPath);
+						outputMimeTypeList, limit, conversion);
 		if (MimeTypeGroups.VIDEOS.list().contains(mimeType))
 			// if (MimeTypeGroups.VIDEOS.list().containsAll(outputMimeTypeList))
 			return new VideoConversionWorker(incomingFile, OutputDir,

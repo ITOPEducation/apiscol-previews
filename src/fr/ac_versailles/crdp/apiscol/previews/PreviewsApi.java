@@ -200,8 +200,7 @@ public class PreviewsApi extends ApiscolApi {
 				mimeType, outputMimeTypeList,
 				FileSystemAccess.getIncomingFile(newJobId, fileName),
 				FileSystemAccess.getOutputDir(newJobId),
-				Math.min(limit, absolutePageLimit), conversion,
-				context.getRealPath(""));
+				Math.min(limit, absolutePageLimit), conversion);
 		if (worker == null) {
 			String message2 = "Mimetype of the file : "
 					+ fileName

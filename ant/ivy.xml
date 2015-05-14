@@ -21,7 +21,7 @@
 	</configurations>
 	<dependencies>
 		<dependency org="crdp_versailles" name="apiscol-commons"
-			rev="1.0" conf="previews->commons" />
+			rev="1.1" conf="previews->commons" />
 		<dependency org="com.sun.jersey" name="jersey-client" rev="1.17.1" />
 		<dependency org="com.sun.jersey" name="jersey-server" rev="1.17.1" />
 		<dependency org="com.sun.jersey" name="jersey-servlet" rev="1.17.1" />
