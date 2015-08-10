@@ -3,7 +3,6 @@
 <project default="ask" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 	<taskdef name="if" classname="net.sf.antcontrib.logic.IfTask" />
 
-	<property name="tomcat.home" value="/usr/share/tomcat7" />
 	<property name="workspace.dir" value="${basedir}/../..">
 	</property>
 	<property name="previews.dir" value="${basedir}/..">
