@@ -27,8 +27,6 @@ public class EpubConversionWorker extends PDFConversionWorker {
 				+ "/" + UUID.randomUUID().toString() + ".epub");
 
 		incomingFile.renameTo(tempFile);
-		System.out.println("**************renamed to "
-				+ tempFile.getAbsolutePath());
 		incomingFile = tempFile;
 		boolean success = convertToPdf();
 		String inputDir = this.incomingFile.getParentFile().getParentFile()
