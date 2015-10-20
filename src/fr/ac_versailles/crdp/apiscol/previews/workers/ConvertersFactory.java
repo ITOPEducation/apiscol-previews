@@ -39,8 +39,6 @@ public class ConvertersFactory {
 	public static IConversionWorker getConversionWorker(String mimeType,
 			List<String> outputMimeTypeList, File incomingFile, File OutputDir,
 			int limit, Conversion conversion) {
-		System.out.println(mimeType);
-		System.out.println(outputMimeTypeList.get(0));
 		if (MimeTypeGroups.PDF.list().contains(mimeType))
 			if (MimeTypeGroups.IMAGES.list().containsAll(outputMimeTypeList))
 				return new PDFConversionWorker(incomingFile, OutputDir,
@@ -56,6 +54,15 @@ public class ConvertersFactory {
 		if (MimeTypeGroups.VIDEOS.list().contains(mimeType))
 			// if (MimeTypeGroups.VIDEOS.list().containsAll(outputMimeTypeList))
 			return new VideoConversionWorker(incomingFile, OutputDir,
+					outputMimeTypeList, limit, conversion);
+		return null;
+	}
+
+	public static IConversionWorker getConversionWorkerForUrl(
+			List<String> outputMimeTypeList, String url, File outputDir,
+			int limit, Conversion conversion) {
+		if (MimeTypeGroups.IMAGES.list().containsAll(outputMimeTypeList))
+			return new WebPageConversionWorker(url, outputDir,
 					outputMimeTypeList, limit, conversion);
 		return null;
 	}

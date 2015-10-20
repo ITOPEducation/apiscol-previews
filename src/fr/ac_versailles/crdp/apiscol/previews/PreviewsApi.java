@@ -63,7 +63,7 @@ public class PreviewsApi extends ApiscolApi {
 			initializeResourceDirectoryInterface(context);
 			createConversionExecutor();
 			readPageLimit(context);
-			sheduleDirectoryCleaning(cleaningDelay);  
+			sheduleDirectoryCleaning(cleaningDelay);
 			isInitialized = true;
 		}
 	}
@@ -74,7 +74,7 @@ public class PreviewsApi extends ApiscolApi {
 		sheduler = Executors.newScheduledThreadPool(1);
 		DirectoryCleaner cleaner = new DirectoryCleaner();
 		sheduler.scheduleAtFixedRate(cleaner, delay * 3600, delay * 3600,
-				TimeUnit.SECONDS); 
+				TimeUnit.SECONDS);
 	}
 
 	private void readPageLimit(ServletContext context) {
@@ -137,6 +137,8 @@ public class PreviewsApi extends ApiscolApi {
 		logger.info("Conversion demandée du fichier " + fileName
 				+ " vers le(s) format(s) " + outputMimeTypes);
 		String requestedFormat = guessRequestedFormat(request, format);
+		Boolean resourceIsUrl = false;
+
 		java.lang.reflect.Type collectionType = new TypeToken<List<String>>() {
 		}.getType();
 		List<String> outputMimeTypeList = null;
@@ -154,55 +156,73 @@ public class PreviewsApi extends ApiscolApi {
 		Conversion conversion = new Conversion(newJobId, fileName,
 				outputMimeTypeList);
 		JobsKeeper.register(conversion);
-		try {
-			FileSystemAccess.dumpIncomingFile(newJobId, uploadedInputStream,
-					fileName);
-		} catch (IOException e) {
-			e.printStackTrace();
-			String message = "An error occured during reception of file "
-					+ fileName + " for job id " + newJobId.toString() + ".";
-			logger.error(message);
-			conversion.setState(Conversion.States.ABORTED, message);
+		if (uploadedInputStream != null) {
+			try {
+				FileSystemAccess.dumpIncomingFile(newJobId,
+						uploadedInputStream, fileName);
+			} catch (IOException e) {
+				e.printStackTrace();
+				String message = "An error occured during reception of file "
+						+ fileName + " for job id " + newJobId.toString() + ".";
+				logger.error(message);
+				conversion.setState(Conversion.States.ABORTED, message);
+			}
+			try {
+				uploadedInputStream.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				String message = "An error occured during reception of file "
+						+ fileName + " for job id " + newJobId.toString()
+						+ " : impossible to close the stream with message "
+						+ e1.getMessage();
+				logger.error(message);
+			}
+			conversion
+					.setState(
+							Conversion.States.FILE_RECEIVED,
+							"File "
+									+ fileName
+									+ " has been received and is going to be submitted for conversion.");
+		} else {
+			conversion
+					.setState(Conversion.States.FILE_RECEIVED, "Parameter "
+							+ fileName
+							+ " will be treated as Url as no file was sent.");
 		}
-		try {
-			uploadedInputStream.close();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			String message = "An error occured during reception of file "
-					+ fileName + " for job id " + newJobId.toString()
-					+ " : impossible to close the stream with message "
-					+ e1.getMessage();
-			logger.error(message);
+
+		String mimeType = "no-file-provided";
+		IConversionWorker worker = null;
+		if (uploadedInputStream != null) {
+			try {
+				mimeType = FileSystemAccess.getMimeType(conversion.getJobId(),
+						conversion.getFileName());
+			} catch (IOException e) {
+				e.printStackTrace();
+				String message = "An error occured while scanning the file "
+						+ fileName + " for conversion " + newJobId.toString()
+						+ ".";
+				logger.error(message);
+				conversion.setState(Conversion.States.ABORTED, message);
+			}
+			String message = "File "
+					+ fileName
+					+ " has been succesfully scanned and mime type discovered : "
+					+ mimeType;
+			conversion.setState(Conversion.States.FILE_SCANNED, message);
+			worker = ConvertersFactory.getConversionWorker(mimeType,
+					outputMimeTypeList,
+					FileSystemAccess.getIncomingFile(newJobId, fileName),
+					FileSystemAccess.getOutputDir(newJobId),
+					Math.min(limit, absolutePageLimit), conversion);
+		} else {
+			worker = ConvertersFactory.getConversionWorkerForUrl(
+					outputMimeTypeList, fileName,
+					FileSystemAccess.getOutputDir(newJobId),
+					Math.min(limit, absolutePageLimit), conversion);
 		}
-		conversion
-				.setState(
-						Conversion.States.FILE_RECEIVED,
-						"File "
-								+ fileName
-								+ " has been received and is going to be submitted for conversion.");
-		String mimeType = "";
-		try {
-			mimeType = FileSystemAccess.getMimeType(conversion.getJobId(),
-					conversion.getFileName());
-		} catch (IOException e) {
-			e.printStackTrace();
-			String message = "An error occured while scanning the file "
-					+ fileName + " for conversion " + newJobId.toString() + ".";
-			logger.error(message);
-			conversion.setState(Conversion.States.ABORTED, message);
-		}
-		String message = "File " + fileName
-				+ " has been succesfully scanned and mime type discovered : "
-				+ mimeType;
-		conversion.setState(Conversion.States.FILE_SCANNED, message);
-		System.out.println(message);
-		IConversionWorker worker = ConvertersFactory.getConversionWorker(
-				mimeType, outputMimeTypeList,
-				FileSystemAccess.getIncomingFile(newJobId, fileName),
-				FileSystemAccess.getOutputDir(newJobId),
-				Math.min(limit, absolutePageLimit), conversion);
+
 		if (worker == null) {
-			String message2 = "Mimetype of the file : "
+			String message2 = "Mimetype of the file or url : "
 					+ fileName
 					+ " is "
 					+ mimeType

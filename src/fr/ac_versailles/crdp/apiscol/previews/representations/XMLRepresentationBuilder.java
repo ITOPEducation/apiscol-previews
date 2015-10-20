@@ -17,7 +17,8 @@ import fr.ac_versailles.crdp.apiscol.previews.Conversion.States;
 import fr.ac_versailles.crdp.apiscol.previews.fileSystem.FileSystemAccess;
 import fr.ac_versailles.crdp.apiscol.utils.XMLUtils;
 
-public class XMLRepresentationBuilder extends AbstractRepresentationBuilder<Document> {
+public class XMLRepresentationBuilder extends
+		AbstractRepresentationBuilder<Document> {
 
 	private static Document createXMLDocument() {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory

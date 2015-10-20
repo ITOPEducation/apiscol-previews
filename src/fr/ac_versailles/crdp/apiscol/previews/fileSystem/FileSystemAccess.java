@@ -88,7 +88,6 @@ public class FileSystemAccess {
 			UUID jobId, final String mimetype) {
 		File outputDir = getOutputDir(jobId);
 		String extension = ExtensionsHandling.getExtension(mimetype);
-		System.out.println("ext -->" + extension);
 		if (StringUtils.isEmpty(extension))
 			return Collections.emptyMap();
 		File[] files = outputDir.listFiles(new FilenameFilter() {
@@ -108,7 +107,6 @@ public class FileSystemAccess {
 
 		for (int i = 0; i < files.length; i++) {
 			String name = files[i].getName();
-			System.out.println("-->" + name);
 			Matcher m = p.matcher(name);
 
 			if (m.find()) {
@@ -119,7 +117,6 @@ public class FileSystemAccess {
 					num = 0;
 				}
 				fileList.put(num, name);
-				System.out.println("ok" + num + "--" + name);
 			}
 		}
 		return fileList;
