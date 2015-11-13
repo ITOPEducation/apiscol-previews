@@ -31,7 +31,8 @@
 		</fileset>
 	</path>
 	<target name="ask">
-		<input message="Build apiscol previews ?" validargs="true,false" addproperty="deploy-previews" defaultvalue="true" />
+		<input message="Build apiscol previews ?" validargs="true,false"
+			addproperty="deploy-previews" defaultvalue="true" />
 		<if>
 			<equals arg1="${deploy-previews}" arg2="true" />
 			<then>
@@ -40,18 +41,20 @@
 		</if>
 	</target>
 	<target name="clean">
-		<delete includeemptydirs="true"  failonerror="false">
-			<fileset dir="${build.dir}" includes="**/*" excludes="**/log4j.properties"/>
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${build.dir}" includes="**/*" excludes="**/log4j.properties" />
 		</delete>
 	</target>
 	<target name="resolve" depends="clean">
 		<ivy:resolve file="${ivy.file}" conf="previews">
 		</ivy:resolve>
-		<ivy:retrieve sync="true" type="jar,bundle" pattern="${libs.dir}/[artifact]-[revision].[ext]" conf="previews" />
+		<ivy:retrieve sync="true" type="jar,bundle"
+			pattern="${libs.dir}/[artifact]-[revision].[ext]" conf="previews" />
 	</target>
 	<target name="compile" depends="resolve">
 		<mkdir dir="${build.dir}" />
-		<javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
+		<javac srcdir="${src.dir}" destdir="${build.dir}"
+			includeantruntime="false">
 			<classpath>
 				<fileset dir="${libs.dir}">
 					<include name="*.jar" />
@@ -61,6 +64,10 @@
 			</classpath>
 		</javac>
 	</target>
-	<copyfile dest="${build.dir}/log4j.properties" src="${src.dir}/log4j.properties"/>
-
+	<copyfile dest="${build.dir}/log4j.properties" src="${src.dir}/log4j.properties" />
+	<copy todir="${build.dir}">
+		<fileset dir="${src.dir}">
+			<include name="**/*.js" />
+		</fileset>
+	</copy>
 </project>
