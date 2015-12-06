@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
-<project default="ask" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project default="compile" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 	<taskdef name="if" classname="net.sf.antcontrib.logic.IfTask" />
 
 	<property name="workspace.dir" value="${basedir}/../..">
@@ -30,16 +30,6 @@
 			<include name="*.jar" />
 		</fileset>
 	</path>
-	<target name="ask">
-		<input message="Build apiscol previews ?" validargs="true,false"
-			addproperty="deploy-previews" defaultvalue="true" />
-		<if>
-			<equals arg1="${deploy-previews}" arg2="true" />
-			<then>
-				<antcall target="compile" />
-			</then>
-		</if>
-	</target>
 	<target name="clean">
 		<delete includeemptydirs="true" failonerror="false">
 			<fileset dir="${build.dir}" includes="**/*" excludes="**/log4j.properties" />
@@ -63,11 +53,13 @@
 				</path>
 			</classpath>
 		</javac>
+		<copyfile dest="${build.dir}/log4j.properties" src="${src.dir}/log4j.properties" />
+		<copyfile dest="${build.dir}/log4j.eclipse.properties" src="${src.dir}/log4j.eclipse.properties" />
+		<copy todir="${build.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.js" />
+			</fileset>
+		</copy>
 	</target>
-	<copyfile dest="${build.dir}/log4j.properties" src="${src.dir}/log4j.properties" />
-	<copy todir="${build.dir}">
-		<fileset dir="${src.dir}">
-			<include name="**/*.js" />
-		</fileset>
-	</copy>
+
 </project>
