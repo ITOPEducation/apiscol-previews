@@ -6,14 +6,15 @@ import java.io.IOException;
 import java.util.List;
 
 import fr.ac_versailles.crdp.apiscol.previews.Conversion;
+import fr.ac_versailles.crdp.apiscol.previews.utils.OsCheck;
 
 public class PDFConversionWorker extends AbstractConversionWorker {
-
 
 	public PDFConversionWorker(File incomingFile, File outputDir,
 			List<String> outputMimeTypeList, int pageLimit,
 			Conversion conversion) {
-		super(incomingFile, outputDir, outputMimeTypeList, pageLimit, conversion);
+		super(incomingFile, outputDir, outputMimeTypeList, pageLimit,
+				conversion);
 
 	}
 
@@ -42,7 +43,24 @@ public class PDFConversionWorker extends AbstractConversionWorker {
 		try {
 			String device = getGsDevice(askedMimeType);
 			String extension = getOutputFileExtension(askedMimeType);
-			String[] commande = { "gswin64", "-dNOPAUSE", "-dBATCH",
+			OsCheck.OSType ostype = OsCheck.getOperatingSystemType();
+			String gsName = "gswin64";
+			switch (ostype) {
+			case Windows:
+				gsName = "gswin64";
+				break;
+			case MacOS:
+				gsName = "gs";
+				break;
+			case Linux:
+				gsName = "gs";
+				break;
+			case Other:
+				gsName = "gs";
+				break;
+			}
+
+			String[] commande = { gsName, "-dNOPAUSE", "-dBATCH",
 					"-sDEVICE=" + device, "-r96",
 					"-sOutputFile=page%00d." + extension,
 					"-dLastPage=" + pageLimit, incomingFile.getAbsolutePath() };
@@ -52,11 +70,11 @@ public class PDFConversionWorker extends AbstractConversionWorker {
 			BufferedReader error = getError(p);
 			String ligne = "";
 			while ((ligne = output.readLine()) != null) {
-				System.out.println("err. " + ligne);
+				System.out.println(ligne);
 			}
 
 			while ((ligne = error.readLine()) != null) {
-				System.out.println(ligne);
+				System.out.println("error : " + ligne);
 			}
 
 			p.waitFor();
