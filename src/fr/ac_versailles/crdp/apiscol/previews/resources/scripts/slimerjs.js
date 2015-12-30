@@ -4,7 +4,7 @@ var latency=250, secondTimeout=100;
  * 
  */
 function waitFor(testFx, onReady) {
-	var maxtimeOutMillis = '${timeout}', // < Max
+	var maxtimeOutMillis = ${timeout}, 
 	// timeout
 	start = new Date().getTime(), condition = (typeof (testFx) === "string" ? eval(testFx)
 			: testFx()), interval = setInterval(
@@ -55,8 +55,8 @@ page.onResourceReceived = function(response) {
 
 };
 page.viewportSize = {
-	width : '${viewport_width}',
-	height : '${viewport_height}'
+	width : ${viewport_width},
+	height : ${viewport_height}
 };
 page.onResourceError = function(resourceError) {
 	console.log('Unable to load resource (#' + resourceError.id + 'URL:'

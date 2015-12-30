@@ -71,7 +71,8 @@ public abstract class AbstractWebPageConversionWorker extends
 								+ askedMimeType);
 				return false;
 			}
-			String scriptFilename = "slimerjs_js_script_" + UUID.randomUUID();
+			String scriptFilename = "web_snapshot_js_script_"
+					+ UUID.randomUUID();
 			File tempScriptFile = File.createTempFile(scriptFilename, ".js");
 
 			String sriptTemplatePath = "scripts/slimerjs.js";
@@ -109,11 +110,11 @@ public abstract class AbstractWebPageConversionWorker extends
 			BufferedReader error = getError(p);
 			String ligne = "";
 			while ((ligne = output.readLine()) != null) {
-				System.out.println("err. " + ligne);
+				System.out.println("[Web snapshot output] " + ligne);
 			}
 
 			while ((ligne = error.readLine()) != null) {
-				System.out.println(ligne);
+				System.out.println("[Web snapshot error] " + ligne);
 			}
 
 			p.waitFor();
