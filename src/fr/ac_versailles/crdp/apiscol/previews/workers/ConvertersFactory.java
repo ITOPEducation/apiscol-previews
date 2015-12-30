@@ -73,24 +73,25 @@ public class ConvertersFactory {
 			throws BarOrMissingParametersException {
 		if (MimeTypeGroups.IMAGES.list().containsAll(outputMimeTypeList)) {
 			String engine = conversionParameters
-					.get(ParametersKeys.webSnapshotEngine);
+					.get(ParametersKeys.webSnapshotEngine.toString());
 			if (StringUtils.isEmpty(engine)) {
 				throw new BarOrMissingParametersException(
 						"Please provide web snapshot engine name : phantomjs or slimerjs");
 			}
-			switch (engine) {
-			case "slimerjs":
+			if (engine.equals("slimerjs")) {
 				return new SlimerJsWebPageConversionWorker(url, outputDir,
 						outputMimeTypeList, limit, conversion,
 						conversionParameters);
-			case "phantomjs":
+			}
+			if (engine.equals("phantomjs")) {
 				return new PhantomJsWebPageConversionWorker(url, outputDir,
 						outputMimeTypeList, limit, conversion,
 						conversionParameters);
-			default:
-				throw new BarOrMissingParametersException(
-						"No web snashot engine with name " + engine);
 			}
+
+			throw new BarOrMissingParametersException(
+					"No web snapshot engine with name " + engine);
+
 		}
 
 		return null;

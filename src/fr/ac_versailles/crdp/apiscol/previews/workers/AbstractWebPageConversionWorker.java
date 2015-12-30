@@ -87,12 +87,12 @@ public abstract class AbstractWebPageConversionWorker extends
 			Map<String, String> tokens = new HashMap<String, String>();
 			tokens.put("url", url);
 			tokens.put("ext", extension);
-			tokens.put("timeout",
-					conversionParameters.get(ParametersKeys.webSnapshotTimeout));
+			tokens.put("timeout", conversionParameters
+					.get(ParametersKeys.webSnapshotTimeout.toString()));
 			tokens.put("viewport_width", conversionParameters
-					.get(ParametersKeys.webSnapshotViewportWidth));
+					.get(ParametersKeys.webSnapshotViewportWidth.toString()));
 			tokens.put("viewport_height", conversionParameters
-					.get(ParametersKeys.webSnapshotViewportHeight));
+					.get(ParametersKeys.webSnapshotViewportHeight.toString()));
 			MapTokenResolver resolver = new MapTokenResolver(tokens);
 
 			Reader source = new InputStreamReader(is);

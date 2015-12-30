@@ -25,8 +25,8 @@ public class PhantomJsWebPageConversionWorker extends
 	@Override
 	protected String[] getFileExecutionCommand(File tempScriptFile) {
 		String[] command = { "phantomjs", "--ssl-protocol=any",
-				"--local-to-remote-url-access=true", "--debug",
-				"--web-security=false", tempScriptFile.getAbsolutePath() };
+				"--local-to-remote-url-access=true", "--web-security=false",
+				tempScriptFile.getAbsolutePath() };
 		return command;
 	}
 
