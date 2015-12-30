@@ -3,7 +3,9 @@ package fr.ac_versailles.crdp.apiscol.previews;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -61,6 +63,7 @@ public class PreviewsApi extends ApiscolApi {
 		super(context);
 		if (!isInitialized) {
 			initializeResourceDirectoryInterface(context);
+			initializeConversionWorkersFactory(context);
 			createConversionExecutor();
 			readPageLimit(context);
 			sheduleDirectoryCleaning(cleaningDelay);
@@ -92,6 +95,28 @@ public class PreviewsApi extends ApiscolApi {
 					ParametersKeys.cleaningDelay, context));
 			FileSystemAccess.initialize(inputDirectory, outputDirectory,
 					cleaningDelay);
+		}
+
+	}
+
+	private void initializeConversionWorkersFactory(ServletContext context) {
+		if (!ConvertersFactory.isInitialized()) {
+			Map<String, String> conversionParameters = new HashMap<String, String>();
+			conversionParameters.put(
+					ParametersKeys.webSnapshotTimeout.toString(),
+					getProperty(ParametersKeys.webSnapshotTimeout, context));
+			conversionParameters.put(
+					ParametersKeys.webSnapshotEngine.toString(),
+					getProperty(ParametersKeys.webSnapshotEngine, context));
+			conversionParameters.put(
+					ParametersKeys.webSnapshotViewportWidth.toString(),
+					getProperty(ParametersKeys.webSnapshotViewportWidth,
+							context));
+			conversionParameters.put(
+					ParametersKeys.webSnapshotViewportHeight.toString(),
+					getProperty(ParametersKeys.webSnapshotViewportHeight,
+							context));
+			ConvertersFactory.initialize(conversionParameters);
 		}
 
 	}
@@ -133,12 +158,11 @@ public class PreviewsApi extends ApiscolApi {
 			@FormDataParam("output-mime-types") String outputMimeTypes,
 			@FormDataParam("fname") String fileName,
 			@FormDataParam(value = "format") final String format,
-			@DefaultValue("10") @FormDataParam("page-limit") int limit) {
+			@DefaultValue("10") @FormDataParam("page-limit") int limit)
+			throws BarOrMissingParametersException {
 		logger.info("Conversion demandée du fichier " + fileName
 				+ " vers le(s) format(s) " + outputMimeTypes);
 		String requestedFormat = guessRequestedFormat(request, format);
-		Boolean resourceIsUrl = false;
-
 		java.lang.reflect.Type collectionType = new TypeToken<List<String>>() {
 		}.getType();
 		List<String> outputMimeTypeList = null;
@@ -215,6 +239,7 @@ public class PreviewsApi extends ApiscolApi {
 					FileSystemAccess.getOutputDir(newJobId),
 					Math.min(limit, absolutePageLimit), conversion);
 		} else {
+
 			worker = ConvertersFactory.getConversionWorkerForUrl(
 					outputMimeTypeList, fileName,
 					FileSystemAccess.getOutputDir(newJobId),
@@ -250,7 +275,6 @@ public class PreviewsApi extends ApiscolApi {
 	public static void stopCleaner() {
 		if (sheduler != null)
 			sheduler.shutdownNow();
-
 	}
 
 	public static void stopExecutors() {

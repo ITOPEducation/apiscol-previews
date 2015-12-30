@@ -8,26 +8,33 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import fr.ac_versailles.crdp.apiscol.ParametersKeys;
 import fr.ac_versailles.crdp.apiscol.previews.Conversion;
 import fr.ac_versailles.crdp.apiscol.previews.resources.MapTokenResolver;
 import fr.ac_versailles.crdp.apiscol.previews.resources.ResourcesLoader;
 import fr.ac_versailles.crdp.apiscol.previews.resources.TokenReplacingReader;
+import fr.ac_versailles.crdp.apiscol.previews.utils.OsCheck;
 import fr.ac_versailles.crdp.apiscol.utils.FileUtils;
 
-public class WebPageConversionWorker extends AbstractConversionWorker {
+public abstract class AbstractWebPageConversionWorker extends
+		AbstractConversionWorker {
 
 	private String url;
+	private Map<String, String> conversionParameters;
 
-	public WebPageConversionWorker(String url, File outputDir,
+	public AbstractWebPageConversionWorker(String url, File outputDir,
 			List<String> outputMimeTypeList, int pageLimit,
-			Conversion conversion) {
+			Conversion conversion, Map<String, String> conversionParameters) {
 		super(null, outputDir, outputMimeTypeList, pageLimit, conversion);
 		this.url = url;
+		this.conversionParameters = conversionParameters;
 
 	}
 
@@ -36,6 +43,8 @@ public class WebPageConversionWorker extends AbstractConversionWorker {
 
 		convertUrlToImage();
 	}
+
+	protected abstract String getScriptTemplatePath();
 
 	protected void convertUrlToImage() {
 		conversion.setState(Conversion.States.INITIATED,
@@ -62,10 +71,10 @@ public class WebPageConversionWorker extends AbstractConversionWorker {
 								+ askedMimeType);
 				return false;
 			}
-			String scriptFilename = "phantom_js_script_" + UUID.randomUUID();
+			String scriptFilename = "slimerjs_js_script_" + UUID.randomUUID();
 			File tempScriptFile = File.createTempFile(scriptFilename, ".js");
 
-			String sriptTemplatePath = "scripts/phantomjs.js";
+			String sriptTemplatePath = "scripts/slimerjs.js";
 			InputStream is = null;
 			is = ResourcesLoader.loadResource(sriptTemplatePath);
 
@@ -78,16 +87,24 @@ public class WebPageConversionWorker extends AbstractConversionWorker {
 			Map<String, String> tokens = new HashMap<String, String>();
 			tokens.put("url", url);
 			tokens.put("ext", extension);
+			tokens.put("timeout",
+					conversionParameters.get(ParametersKeys.webSnapshotTimeout));
+			tokens.put("viewport_width", conversionParameters
+					.get(ParametersKeys.webSnapshotViewportWidth));
+			tokens.put("viewport_height", conversionParameters
+					.get(ParametersKeys.webSnapshotViewportHeight));
 			MapTokenResolver resolver = new MapTokenResolver(tokens);
 
 			Reader source = new InputStreamReader(is);
 
 			Reader reader = new TokenReplacingReader(source, resolver);
 
-			FileUtils.writeDataToFile(reader, tempScriptFile.getAbsolutePath());
-			String[] commande = { "phantomjs", tempScriptFile.getAbsolutePath() };
-			String[] envp = {};
-			Process p = Runtime.getRuntime().exec(commande, envp, outputDir);
+			String absolutePath = tempScriptFile.getAbsolutePath();
+			FileUtils.writeDataToFile(reader, absolutePath);
+
+			String[] commande = getFileExecutionCommand(tempScriptFile);
+
+			Process p = Runtime.getRuntime().exec(commande, null, outputDir);
 			BufferedReader output = getOutput(p);
 			BufferedReader error = getError(p);
 			String ligne = "";
@@ -110,5 +127,7 @@ public class WebPageConversionWorker extends AbstractConversionWorker {
 		return true;
 
 	}
+
+	abstract protected String[] getFileExecutionCommand(File tempScriptFile);
 
 }

@@ -1,4 +1,4 @@
-var latency = 250, secondTimeout = 100;
+var latency=250, secondTimeout=100;
 /**
  * See https://github.com/ariya/phantomjs/blob/master/examples/waitfor.js
  * 
@@ -69,7 +69,7 @@ page.open(address, function(status) {
 		console.log('Unable to load the address with status ' + status);
 		phantom.exit();
 	} else {
-		console.log('Wait 3 seconds before snapshot ');
+		console.log('Launching snapshot ');
 
 		waitFor(function() {
 			for (var i = 1; i < resources.length; ++i) {

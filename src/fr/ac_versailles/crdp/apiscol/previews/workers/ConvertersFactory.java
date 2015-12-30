@@ -3,10 +3,17 @@ package fr.ac_versailles.crdp.apiscol.previews.workers;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
+import fr.ac_versailles.crdp.apiscol.ParametersKeys;
+import fr.ac_versailles.crdp.apiscol.previews.BarOrMissingParametersException;
 import fr.ac_versailles.crdp.apiscol.previews.Conversion;
 
 public class ConvertersFactory {
+	private static boolean initialized = false;
+
 	static String[] pdf = { "application/pdf" };
 	static String[] officedocs = {
 			"application/msword",
@@ -19,6 +26,8 @@ public class ConvertersFactory {
 	static String[] videos = { "video/x-ms-wmv", "video/x-m4v", "video/flv",
 			"video/x-flv", "video/ogg", "video/avi", "video/webm" };
 	static String[] epub = { "application/epub+zip" };
+
+	private static Map<String, String> conversionParameters;
 
 	public enum MimeTypeGroups {
 		PDF(pdf), OFFICE_DOCUMENTS(officedocs), IMAGES(images), VIDEOS(videos), EPUB(
@@ -60,11 +69,41 @@ public class ConvertersFactory {
 
 	public static IConversionWorker getConversionWorkerForUrl(
 			List<String> outputMimeTypeList, String url, File outputDir,
-			int limit, Conversion conversion) {
-		if (MimeTypeGroups.IMAGES.list().containsAll(outputMimeTypeList))
-			return new WebPageConversionWorker(url, outputDir,
-					outputMimeTypeList, limit, conversion);
+			int limit, Conversion conversion)
+			throws BarOrMissingParametersException {
+		if (MimeTypeGroups.IMAGES.list().containsAll(outputMimeTypeList)) {
+			String engine = conversionParameters
+					.get(ParametersKeys.webSnapshotEngine);
+			if (StringUtils.isEmpty(engine)) {
+				throw new BarOrMissingParametersException(
+						"Please provide web snapshot engine name : phantomjs or slimerjs");
+			}
+			switch (engine) {
+			case "slimerjs":
+				return new SlimerJsWebPageConversionWorker(url, outputDir,
+						outputMimeTypeList, limit, conversion,
+						conversionParameters);
+			case "phantomjs":
+				return new PhantomJsWebPageConversionWorker(url, outputDir,
+						outputMimeTypeList, limit, conversion,
+						conversionParameters);
+			default:
+				throw new BarOrMissingParametersException(
+						"No web snashot engine with name " + engine);
+			}
+		}
+
 		return null;
+	}
+
+	public static boolean isInitialized() {
+		return initialized;
+	}
+
+	public static void initialize(Map<String, String> conversionParameters) {
+		ConvertersFactory.conversionParameters = conversionParameters;
+		initialized = true;
+
 	}
 
 }
