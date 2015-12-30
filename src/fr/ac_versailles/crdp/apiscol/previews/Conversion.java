@@ -11,6 +11,7 @@ public class Conversion {
 	private String message;
 	private final String fileName;
 	private final List<String> outputMimeTypeList;
+	private IConversionWorker worker;
 
 	public Conversion(UUID newJobId, String fileName,
 			List<String> outputMimeTypeList) {
