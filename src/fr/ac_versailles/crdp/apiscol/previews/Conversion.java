@@ -10,7 +10,6 @@ public class Conversion {
 	private States state;
 	private String message;
 	private final String fileName;
-	private IConversionWorker worker;
 	private final List<String> outputMimeTypeList;
 
 	public Conversion(UUID newJobId, String fileName,

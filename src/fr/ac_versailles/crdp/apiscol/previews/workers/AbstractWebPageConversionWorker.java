@@ -1,15 +1,11 @@
 package fr.ac_versailles.crdp.apiscol.previews.workers;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +16,6 @@ import fr.ac_versailles.crdp.apiscol.previews.Conversion;
 import fr.ac_versailles.crdp.apiscol.previews.resources.MapTokenResolver;
 import fr.ac_versailles.crdp.apiscol.previews.resources.ResourcesLoader;
 import fr.ac_versailles.crdp.apiscol.previews.resources.TokenReplacingReader;
-import fr.ac_versailles.crdp.apiscol.previews.utils.OsCheck;
 import fr.ac_versailles.crdp.apiscol.utils.FileUtils;
 
 public abstract class AbstractWebPageConversionWorker extends

@@ -1,12 +1,8 @@
 package fr.ac_versailles.crdp.apiscol.previews.workers;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-
-import org.apache.commons.lang.StringUtils;
 
 import fr.ac_versailles.crdp.apiscol.previews.Conversion;
 
