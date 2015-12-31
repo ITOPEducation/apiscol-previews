@@ -72,6 +72,10 @@ public class ConvertersFactory {
 			int limit, Conversion conversion)
 			throws BarOrMissingParametersException {
 		if (MimeTypeGroups.IMAGES.list().containsAll(outputMimeTypeList)) {
+			if (url.toLowerCase().endsWith(".pdf")) {
+				return new RemotePDFConversionWorker(url, outputDir,
+						outputMimeTypeList, limit, conversion);
+			}
 			String engine = conversionParameters
 					.get(ParametersKeys.webSnapshotEngine.toString());
 			if (StringUtils.isEmpty(engine)) {
