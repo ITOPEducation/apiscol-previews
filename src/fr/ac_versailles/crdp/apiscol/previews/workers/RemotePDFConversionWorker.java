@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.ac_versailles.crdp.apiscol.previews.Conversion;
+import fr.ac_versailles.crdp.apiscol.utils.FileUtils;
 
 public class RemotePDFConversionWorker extends PDFConversionWorker {
 
@@ -39,38 +40,7 @@ public class RemotePDFConversionWorker extends PDFConversionWorker {
 				Conversion.States.INITIATED,
 				String.format("Trying to dump pdf file to %s",
 						incomingFile.getAbsolutePath()));
-		return downloadFileFromURL(url, incomingFile);
-	}
-
-	public static boolean downloadFileFromURL(String urlString, File destination) {
-		boolean success = false;
-		ReadableByteChannel rbc = null;
-		FileOutputStream fos = null;
-		try {
-			URL website = new URL(urlString);
-
-			rbc = Channels.newChannel(website.openStream());
-			fos = new FileOutputStream(destination);
-			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-			success = true;
-		} catch (IOException e) {
-			e.printStackTrace();
-
-		} finally {
-			try {
-				fos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				success = false;
-
-			}
-			try {
-				rbc.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return success;
+		return FileUtils.downloadFileFromURL(url, incomingFile);
 	}
 
 }
