@@ -14,7 +14,8 @@ public class SlimerJsWebPageConversionWorker extends
 	public SlimerJsWebPageConversionWorker(String url, File outputDir,
 			List<String> outputMimeTypeList, int pageLimit,
 			Conversion conversion, Map<String, String> conversionParameters) {
-		super(url, outputDir, outputMimeTypeList, pageLimit, conversion, conversionParameters);
+		super(url, outputDir, outputMimeTypeList, pageLimit, conversion,
+				conversionParameters);
 
 	}
 
@@ -29,7 +30,7 @@ public class SlimerJsWebPageConversionWorker extends
 		ArrayList<String> commandeArrayList = new ArrayList<String>();
 		switch (ostype) {
 		case Windows:
-			commandeArrayList.add("slimerjs.bat");
+			commandeArrayList.add("mod_slimerjs.bat");
 			break;
 
 		case Linux:

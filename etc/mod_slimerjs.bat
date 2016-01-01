@@ -198,14 +198,14 @@ goto :eof
 REM *****************************************************************************
 REM bugs fixed in find firefox
 REM Check environment variable
-echo "Program files x86 : %ProgramFiles(x86)%"
+echo "Program files x86 : %programfiles(x86)%"
 REM This part never used
 if exist "%programfiles%\Mozilla Firefox\firefox.exe" (
     SET "SLIMERJSLAUNCHER=%programfiles%\Mozilla Firefox\firefox.exe"
 )
 REM This part always used
-if exist "\"%ProgramFiles(x86)%\Mozilla Firefox\firefox.exe\"" (
-    SET "SLIMERJSLAUNCHER=%ProgramFiles(x86)%\Mozilla Firefox\firefox.exe"
+if exist "\"%programfiles(x86)%\Mozilla Firefox\firefox.exe\"" (
+    SET "SLIMERJSLAUNCHER=%programfiles(x86)%\Mozilla Firefox\firefox.exe"
 )
 echo "SLIMERJSLAUNCHER is set to %SLIMERJSLAUNCHER%"
 goto :eof
