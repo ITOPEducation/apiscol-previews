@@ -1,10 +1,10 @@
-var latency=250, secondTimeout=100;
+var latency=250, secondTimeout=100, accessToken = ${access_token};
 /**
  * See https://github.com/ariya/phantomjs/blob/master/examples/waitfor.js
  * 
  */
 function waitFor(testFx, onReady) {
-	var maxtimeOutMillis = ${timeout}, 
+	var maxtimeOutMillis = ${timeout},
 	// timeout
 	start = new Date().getTime(), condition = (typeof (testFx) === "string" ? eval(testFx)
 			: testFx()), interval = setInterval(
@@ -30,7 +30,11 @@ function waitFor(testFx, onReady) {
 };
 
 var page = require('webpage').create(), address, output, size;
-
+if(accessToken){
+	page.customHeaders = {
+			'Authorization': 'Bearer '+accessToken
+	}
+}
 address = '${url}';
 output = 'output.${ext}';
 if (address.substr(-4) === ".pdf") {

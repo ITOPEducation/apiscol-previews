@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import fr.ac_versailles.crdp.apiscol.ParametersKeys;
+import fr.ac_versailles.crdp.apiscol.auth.oauth.OAuthException;
+import fr.ac_versailles.crdp.apiscol.auth.oauth.OauthServersProxy;
 import fr.ac_versailles.crdp.apiscol.previews.Conversion;
 import fr.ac_versailles.crdp.apiscol.previews.resources.MapTokenResolver;
 import fr.ac_versailles.crdp.apiscol.previews.resources.ResourcesLoader;
@@ -23,6 +25,7 @@ public abstract class AbstractWebPageConversionWorker extends
 
 	private String url;
 	private Map<String, String> conversionParameters;
+	private OauthServersProxy oauthServersProxy;
 
 	public AbstractWebPageConversionWorker(String url, File outputDir,
 			List<String> outputMimeTypeList, int pageLimit,
@@ -80,8 +83,26 @@ public abstract class AbstractWebPageConversionWorker extends
 								+ sriptTemplatePath);
 				return false;
 			}
+			String accessToken = null;
+			if (oauthServersProxy != null) {
+				try {
+					accessToken = oauthServersProxy.getAccesTokenForUrl(
+							url, 10);
+					// TODO test oauth
+					System.out.println("Webpage snapshot uses access token "
+							+ accessToken);
+
+				} catch (OAuthException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
 			Map<String, String> tokens = new HashMap<String, String>();
+
 			tokens.put("url", url);
+			tokens.put("access_token", accessToken == null ? "null" : "'"
+					+ accessToken + "'");
 			tokens.put("ext", extension);
 			tokens.put("timeout", conversionParameters
 					.get(ParametersKeys.webSnapshotTimeout.toString()));
@@ -125,5 +146,10 @@ public abstract class AbstractWebPageConversionWorker extends
 	}
 
 	abstract protected String[] getFileExecutionCommand(File tempScriptFile);
+
+	public void setOauthServersProxy(OauthServersProxy oauthServersProxy) {
+		this.oauthServersProxy = oauthServersProxy;
+
+	}
 
 }

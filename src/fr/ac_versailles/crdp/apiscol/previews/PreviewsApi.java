@@ -62,6 +62,7 @@ public class PreviewsApi extends ApiscolApi {
 	public PreviewsApi(@Context ServletContext context) {
 		super(context);
 		if (!isInitialized) {
+			fetchOauthServersProxy(context);
 			initializeResourceDirectoryInterface(context);
 			initializeConversionWorkersFactory(context);
 			createConversionExecutor();
@@ -117,6 +118,9 @@ public class PreviewsApi extends ApiscolApi {
 					getProperty(ParametersKeys.webSnapshotViewportHeight,
 							context));
 			ConvertersFactory.initialize(conversionParameters);
+			if(oauthServersProxy!=null){
+				ConvertersFactory.setOauthServersProxy(oauthServersProxy);
+			}
 		}
 
 	}
@@ -160,8 +164,9 @@ public class PreviewsApi extends ApiscolApi {
 			@FormDataParam(value = "format") final String format,
 			@DefaultValue("10") @FormDataParam("page-limit") int limit)
 			throws BarOrMissingParametersException {
-		logger.info("Conversion demandée du fichier " + fileName
-				+ " vers le(s) format(s) " + outputMimeTypes);
+		getLogger().info(
+				"Conversion demandée du fichier " + fileName
+						+ " vers le(s) format(s) " + outputMimeTypes);
 		String requestedFormat = guessRequestedFormat(request, format);
 		java.lang.reflect.Type collectionType = new TypeToken<List<String>>() {
 		}.getType();
@@ -173,7 +178,7 @@ public class PreviewsApi extends ApiscolApi {
 			String message = String.format(
 					"The list of mimetypes %s is impossible to parse as JSON",
 					outputMimeTypes);
-			logger.warn(message);
+			getLogger().warn(message);
 			outputMimeTypeList = new ArrayList<String>();
 		}
 		UUID newJobId = UUID.randomUUID();
@@ -188,7 +193,7 @@ public class PreviewsApi extends ApiscolApi {
 				e.printStackTrace();
 				String message = "An error occured during reception of file "
 						+ fileName + " for job id " + newJobId.toString() + ".";
-				logger.error(message);
+				getLogger().error(message);
 				conversion.setState(Conversion.States.ABORTED, message);
 			}
 			try {
@@ -199,7 +204,7 @@ public class PreviewsApi extends ApiscolApi {
 						+ fileName + " for job id " + newJobId.toString()
 						+ " : impossible to close the stream with message "
 						+ e1.getMessage();
-				logger.error(message);
+				getLogger().error(message);
 			}
 			conversion
 					.setState(
@@ -225,7 +230,7 @@ public class PreviewsApi extends ApiscolApi {
 				String message = "An error occured while scanning the file "
 						+ fileName + " for conversion " + newJobId.toString()
 						+ ".";
-				logger.error(message);
+				getLogger().error(message);
 				conversion.setState(Conversion.States.ABORTED, message);
 			}
 			String message = "File "
@@ -252,7 +257,7 @@ public class PreviewsApi extends ApiscolApi {
 					+ " is "
 					+ mimeType
 					+ " and is not handled by the service or the ouput mime-types are not handled, check documentation.";
-			logger.error(message2);
+			getLogger().error(message2);
 			conversion.setState(Conversion.States.ABORTED, message2);
 		} else {
 			conversion.attachWorker(worker);
@@ -278,8 +283,9 @@ public class PreviewsApi extends ApiscolApi {
 	}
 
 	public static void stopExecutors() {
-		if (logger != null)
-			logger.info("Thread executors are going to be stopped for Apiscol Edit Synchronisation Service.");
+		if (getLogger() != null)
+			getLogger()
+					.info("Thread executors are going to be stopped for Apiscol Edit Synchronisation Service.");
 		if (conversionExecutor != null)
 			conversionExecutor.shutdown();
 

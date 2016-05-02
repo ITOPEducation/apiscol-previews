@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
 import fr.ac_versailles.crdp.apiscol.ParametersKeys;
+import fr.ac_versailles.crdp.apiscol.auth.oauth.OauthServersProxy;
 import fr.ac_versailles.crdp.apiscol.previews.BarOrMissingParametersException;
 import fr.ac_versailles.crdp.apiscol.previews.Conversion;
 
@@ -28,6 +29,8 @@ public class ConvertersFactory {
 	static String[] epub = { "application/epub+zip" };
 
 	private static Map<String, String> conversionParameters;
+
+	private static OauthServersProxy oauthServersProxy;
 
 	public enum MimeTypeGroups {
 		PDF(pdf), OFFICE_DOCUMENTS(officedocs), IMAGES(images), VIDEOS(videos), EPUB(
@@ -83,14 +86,22 @@ public class ConvertersFactory {
 						"Please provide web snapshot engine name : phantomjs or slimerjs");
 			}
 			if (engine.equals("slimerjs")) {
-				return new SlimerJsWebPageConversionWorker(url, outputDir,
+				AbstractWebPageConversionWorker slimerJsWebPageConversionWorker = new SlimerJsWebPageConversionWorker(url, outputDir,
 						outputMimeTypeList, limit, conversion,
 						conversionParameters);
+				if(oauthServersProxy!=null){
+					slimerJsWebPageConversionWorker.setOauthServersProxy(oauthServersProxy);
+				}
+				return slimerJsWebPageConversionWorker;
 			}
 			if (engine.equals("phantomjs")) {
-				return new PhantomJsWebPageConversionWorker(url, outputDir,
+				PhantomJsWebPageConversionWorker phantomJsWebPageConversionWorker = new PhantomJsWebPageConversionWorker(url, outputDir,
 						outputMimeTypeList, limit, conversion,
 						conversionParameters);
+				if(oauthServersProxy!=null){
+					phantomJsWebPageConversionWorker.setOauthServersProxy(oauthServersProxy);
+				}
+				return phantomJsWebPageConversionWorker;
 			}
 
 			throw new BarOrMissingParametersException(
@@ -109,6 +120,11 @@ public class ConvertersFactory {
 		ConvertersFactory.conversionParameters = conversionParameters;
 		initialized = true;
 
+	}
+
+	public static void setOauthServersProxy(OauthServersProxy oauthServersProxy) {
+		ConvertersFactory.oauthServersProxy = oauthServersProxy;
+		
 	}
 
 }
