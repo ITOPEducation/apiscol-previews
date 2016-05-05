@@ -8,3 +8,7 @@ web_snapshot_timeout=3000
 web_snapshot_viewport_width=1400
 web_snapshot_viewport_height=600
 service_wan_url=http://apiscol-external:8080/previews
+oauth_server_1_uri=https://ent.enteduc.fr/oauth/oauth2/token
+oauth_server_1_client_id=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+oauth_server_1_client_secret=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+oauth_server_1_resources_fqdn=https://toto1.enteduc.fr/,https://toto2.enteduc.fr
